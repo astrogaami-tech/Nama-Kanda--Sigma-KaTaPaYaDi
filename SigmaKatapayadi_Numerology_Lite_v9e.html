@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sigma Katapayadi — GoPada Padhathi</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --deep:#1A237E;--indigo:#3949AB;--violet:#7C4DFF;
+  --bg:#F0F4FF;--card:#FFFFFF;--text:#1A237E;--muted:#5C6BC0;
+  --border:#C5CAE9;--green:#2E7D32;--red:#C62828;--sun:#E65100;--teal:#00796B;
+  --amber:#F57F17;--pink:#880E4F;
+}
+body{font-family:'Segoe UI','Noto Sans Devanagari','Noto Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:60px}
+
+/* HEADER */
+.hdr{background:linear-gradient(135deg,var(--deep) 0%,var(--indigo) 60%,#5E35B1 100%);color:white;padding:20px 20px 16px;text-align:center;box-shadow:0 4px 20px rgba(26,35,126,0.25);position:relative}
+.hdr h1{font-size:clamp(1.1rem,3.5vw,1.6rem);font-weight:800;letter-spacing:-0.3px}
+.hdr p{font-size:0.78rem;opacity:0.75;margin-top:3px}
+.hdr-btns{position:absolute;top:50%;right:14px;transform:translateY(-50%);display:flex;gap:7px}
+.hdr-btn{background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.35);color:white;padding:6px 13px;border-radius:20px;font-size:0.76rem;font-weight:700;cursor:pointer;transition:background 0.2s;white-space:nowrap}
+.hdr-btn:hover{background:rgba(255,255,255,0.3)}
+
+/* PAGE */
+.page{max-width:1060px;margin:0 auto;padding:20px 14px}
+
+/* INPUT CARD */
+.card{background:var(--card);border-radius:16px;padding:20px 22px 18px;box-shadow:0 3px 18px rgba(57,73,171,0.09);border:1.5px solid var(--border);margin-bottom:18px}
+.card-title{font-size:0.72rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.card-title span{background:var(--indigo);color:white;border-radius:10px;padding:2px 8px;font-size:0.68rem}
+
+.input-row{display:flex;gap:9px;align-items:stretch}
+.input-row input[type=text]{flex:1;padding:12px 15px;font-size:1.05rem;border:2px solid var(--border);border-radius:11px;outline:none;color:var(--text);background:#FAFBFF;font-family:inherit;transition:border-color 0.2s,box-shadow 0.2s}
+.input-row input[type=text]:focus{border-color:var(--indigo);box-shadow:0 0 0 3px rgba(57,73,171,0.12)}
+.btn-add{background:linear-gradient(135deg,var(--indigo),#5E35B1);color:white;border:none;padding:12px 20px;border-radius:11px;font-size:0.9rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:transform 0.15s,box-shadow 0.2s;box-shadow:0 3px 12px rgba(57,73,171,0.28)}
+.btn-add:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(57,73,171,0.38)}
+.input-hint{font-size:0.73rem;color:var(--muted);margin-top:6px}
+.sample-link{color:var(--indigo);cursor:pointer;text-decoration:underline;font-weight:600}
+
+/* NAME LOG */
+.log-bar{background:#EEF0FF;border:1.5px solid var(--border);border-radius:10px;padding:8px 13px;margin-top:13px;display:none;align-items:flex-start;gap:10px;flex-wrap:wrap}
+.log-bar.show{display:flex}
+.log-label{font-size:0.68rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;white-space:nowrap;padding-top:2px;flex-shrink:0}
+.log-text{font-size:0.8rem;color:var(--text);font-weight:600;word-break:break-all;flex:1;line-height:1.5}
+.log-copy{background:var(--indigo);color:white;border:none;padding:3px 10px;border-radius:6px;font-size:0.7rem;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.log-copy:hover{background:var(--deep)}
+
+/* ACTIONS BAR */
+.actions-bar{display:none;flex-wrap:wrap;gap:9px;margin-bottom:18px;align-items:center}
+.actions-bar.on{display:flex}
+.btn-s{background:var(--card);color:var(--indigo);border:2px solid var(--indigo);padding:7px 15px;border-radius:9px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.18s}
+.btn-s:hover{background:var(--indigo);color:white}
+.btn-d{background:var(--card);color:var(--red);border:2px solid var(--red);padding:7px 15px;border-radius:9px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.18s}
+.btn-d:hover{background:var(--red);color:white}
+.btn-csv{background:linear-gradient(135deg,var(--green),#1B5E20);color:white;border:none;padding:8px 18px;border-radius:9px;font-size:0.82rem;font-weight:700;cursor:pointer;transition:all 0.18s;box-shadow:0 2px 8px rgba(46,125,50,0.25);margin-left:auto}
+.btn-csv:hover{transform:translateY(-1px)}
+
+/* RESULTS */
+.res-hdr{display:flex;align-items:center;gap:9px;margin-bottom:12px;flex-wrap:wrap}
+.res-hdr h2{font-size:0.95rem;font-weight:700;color:var(--indigo)}
+.res-count{background:var(--indigo);color:white;font-size:0.7rem;font-weight:700;padding:2px 9px;border-radius:20px}
+.expand-hint{font-size:0.7rem;color:var(--muted);font-style:italic}
+
+/* TABLE */
+.tbl-outer{width:100%;overflow-x:auto;border-radius:12px;box-shadow:0 3px 16px rgba(57,73,171,0.09);background:white}
+table{border-collapse:collapse;background:white;font-size:0.8rem;width:max-content;min-width:100%}
+thead tr{background:linear-gradient(135deg,var(--deep),var(--indigo))}
+th{color:white;padding:10px 9px;font-weight:700;text-align:center;font-size:0.7rem;letter-spacing:0.3px;white-space:nowrap;position:sticky;top:0;z-index:2}
+td{padding:8px 9px;text-align:center;border-bottom:1px solid #EEF0FF;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+th:nth-child(1),td:nth-child(1){position:sticky;left:0;z-index:3;background:inherit;border-right:1px solid var(--border);min-width:34px}
+th:nth-child(2),td:nth-child(2){position:sticky;left:34px;z-index:3;background:inherit;border-right:2px solid var(--border);min-width:110px;max-width:160px;text-align:left}
+thead th:nth-child(1),thead th:nth-child(2){z-index:5;background:var(--deep)}
+tr.data-row:nth-child(4n+1) td,tr.data-row:nth-child(4n+2) td{background:#F8F9FF}
+tr.data-row:nth-child(4n+1) td:nth-child(1),tr.data-row:nth-child(4n+1) td:nth-child(2),
+tr.data-row:nth-child(4n+2) td:nth-child(1),tr.data-row:nth-child(4n+2) td:nth-child(2){background:#F8F9FF}
+tr.data-row:hover td{background:#ECEEFF !important;cursor:pointer}
+.expand-caret{font-size:0.62rem;display:block;color:var(--muted);margin-top:2px;transition:transform 0.2s}
+tr.data-row.expanded .expand-caret{transform:rotate(180deg);color:var(--indigo)}
+.td-name{font-weight:700;color:var(--text);font-size:0.9rem;white-space:nowrap}
+.td-num{font-weight:700;color:var(--indigo);font-variant-numeric:tabular-nums;letter-spacing:0.3px;white-space:nowrap}
+.badge{font-weight:700;border-radius:5px;padding:2px 7px;display:inline-block;font-size:0.75rem;white-space:nowrap}
+.b-rashi{color:var(--deep);background:#E8EAF6}
+.b-p9{color:#B71C1C;background:#FFEBEE}
+.b-p7{color:#E65100;background:#FFF3E0}
+.b-nak{color:#1A237E;background:#E3F2FD;font-size:0.68rem}
+.b-vg{color:#4A148C;background:#F3E5F5;font-size:0.72rem}
+.b-fl{color:#1B5E20;background:#E8F5E9;font-size:1rem;font-weight:700;padding:1px 8px}
+.b-sigma{color:#00695C;background:#E0F2F1;font-size:0.7rem;letter-spacing:0.5px}
+.del-btn{background:none;border:none;cursor:pointer;font-size:0.85rem;color:#ccc;transition:color 0.2s,transform 0.15s;padding:2px 4px}
+.del-btn:hover{color:var(--red);transform:scale(1.3)}
+
+/* DETAIL ROW */
+tr.detail-row{display:none}
+tr.detail-row.open{display:table-row}
+tr.detail-row td{background:#F0F7FF !important;padding:0;border-bottom:2px solid var(--indigo)}
+tr.detail-row td:nth-child(1){background:#E8EEF8 !important}
+tr.detail-row td:nth-child(2){background:#E8EEF8 !important}
+.detail-inner{padding:12px 15px 14px}
+.syl-track{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end;margin-bottom:10px}
+.syl-block{display:flex;flex-direction:column;align-items:center;border:1.5px solid var(--border);border-radius:7px;overflow:hidden;min-width:46px}
+.syl-block.excl{opacity:0.32}
+.syl-block.no-c{border-style:dashed}
+.syl-top{background:white;padding:5px 7px;font-size:1.05rem;font-weight:700;color:var(--text);width:100%;text-align:center;line-height:1.2}
+.syl-mid{background:#EEF0FF;padding:2px 5px;font-size:0.68rem;color:var(--muted);width:100%;text-align:center;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.syl-mid.hit{background:#E3F2FD;color:#0D47A1;font-weight:700}
+.syl-mid.miss{background:#FFF8E1;color:#F57F17;font-size:0.62rem}
+.syl-bot{background:var(--indigo);color:white;font-size:0.88rem;font-weight:700;width:100%;text-align:center;padding:3px 5px}
+.syl-bot.miss{background:#ccc;color:#666}
+.syl-bot.excl{background:#ddd;color:#999}
+.syl-arrow{font-size:0.75rem;color:var(--muted);margin-bottom:5px}
+.asm{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:4px;padding:9px 11px;background:white;border-radius:7px;border:1.5px solid var(--border);font-size:0.77rem}
+.asm-lbl{font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.7px;color:var(--muted);margin-right:2px}
+.asm-d{background:#E8EAF6;color:var(--indigo);font-weight:800;border-radius:4px;padding:1px 5px;font-size:0.82rem}
+.asm-eq{font-weight:700;color:var(--muted)}
+.asm-res{background:var(--indigo);color:white;border-radius:5px;padding:2px 9px;font-weight:700;font-size:0.82rem}
+.asm-sig{background:#E0F2F1;color:#00695C;border-radius:5px;padding:2px 9px;font-weight:700;font-size:0.82rem}
+.asm-sep{color:var(--muted);font-size:0.75rem;margin:0 2px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(10,15,60,0.45);z-index:1000;display:none;justify-content:center;align-items:flex-start;padding:30px 12px;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal-box{background:white;border-radius:18px;padding:26px 28px 22px;width:100%;max-width:700px;box-shadow:0 16px 48px rgba(26,35,126,0.2);position:relative;margin:auto}
+.modal-box.sm{max-width:480px}
+.modal-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--muted);line-height:1;transition:color 0.2s}
+.modal-close:hover{color:var(--red)}
+.modal-title{font-size:1.1rem;font-weight:800;color:var(--indigo);margin-bottom:4px}
+.modal-sub{font-size:0.78rem;color:var(--muted);margin-bottom:18px}
+.modal-actions{display:flex;gap:9px;margin-top:18px;justify-content:flex-end;flex-wrap:wrap}
+
+/* HELP / SETTINGS TABS */
+.htabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;border-bottom:2px solid var(--border);padding-bottom:10px}
+.htab{background:var(--bg);border:1.5px solid var(--border);color:var(--muted);padding:5px 13px;border-radius:20px;font-size:0.76rem;font-weight:700;cursor:pointer;transition:all 0.18s}
+.htab:hover{border-color:var(--indigo);color:var(--indigo)}
+.htab.on{background:var(--indigo);color:white;border-color:var(--indigo)}
+.hpanel{display:none}
+.hpanel.on{display:block}
+.hsec{margin-bottom:18px}
+.hsec h3{font-size:0.76rem;font-weight:800;color:var(--indigo);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid var(--border)}
+.hsec p{font-size:0.79rem;color:#444;line-height:1.58;margin-bottom:6px}
+.reftbl{width:100%;border-collapse:collapse;font-size:0.76rem;margin-bottom:8px;border:1.5px solid #bbb}
+.reftbl th{background:linear-gradient(135deg,var(--deep),var(--indigo));color:white;padding:6px 5px;text-align:center;font-weight:700;font-size:0.68rem;border:1px solid rgba(255,255,255,0.2)}
+.reftbl td{border:1px solid #bbb;padding:4px 5px;text-align:center;vertical-align:top}
+.reftbl tr:nth-child(even) td{background:#F7F8FF}
+.sc{font-size:1.05rem;font-weight:600;color:var(--text);line-height:1.2}
+.ro{font-size:0.62rem;color:var(--muted);margin-top:1px}
+.gl{background:#EEF0FF;font-weight:700;font-size:0.68rem;color:var(--indigo);text-align:left;padding-left:7px}
+.em{color:#ccc;font-size:0.68rem}
+.ref-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ref-mini{width:100%;border-collapse:collapse;font-size:0.74rem;border:1.5px solid #bbb}
+.ref-mini th{background:linear-gradient(135deg,var(--deep),var(--indigo));color:white;padding:5px;text-align:center;font-size:0.66rem;font-weight:700;border:1px solid rgba(255,255,255,0.2)}
+.ref-mini td{border:1px solid #bbb;padding:4px 5px;text-align:center}
+.ref-mini tr:nth-child(even) td{background:#F7F8FF}
+.nb{display:inline-block;background:var(--indigo);color:white;border-radius:4px;padding:1px 5px;font-weight:700;font-size:0.75rem}
+
+/* SETTINGS toggles */
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);gap:12px}
+.setting-row:last-child{border-bottom:none}
+.setting-lbl{font-size:0.85rem;color:var(--text);font-weight:600}
+.setting-desc{font-size:0.72rem;color:var(--muted);margin-top:2px}
+.toggle-sw{position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0}
+.toggle-sw input{opacity:0;width:0;height:0}
+.toggle-sw .sl{position:absolute;cursor:pointer;inset:0;background:#ccc;border-radius:22px;transition:0.3s}
+.toggle-sw .sl:before{position:absolute;content:"";height:16px;width:16px;left:3px;bottom:3px;background:white;border-radius:50%;transition:0.3s}
+.toggle-sw input:checked + .sl{background:var(--indigo)}
+.toggle-sw input:checked + .sl:before{transform:translateX(18px)}
+
+/* NAKSHATRA ref */
+.nak-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:8px}
+.nak-cell{background:#F0F4FF;border:1px solid var(--border);border-radius:6px;padding:5px 7px;font-size:0.7rem;line-height:1.35}
+.nak-cell .nn{font-weight:700;color:var(--deep)}
+.nak-cell .nm{font-size:0.62rem;color:var(--muted)}
+
+/* REVIEW */
+.rev-row{display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.rev-row:last-child{border-bottom:none}
+.rev-word{font-weight:700;font-size:0.9rem;min-width:80px;padding-top:3px}
+.syl-chips{display:flex;flex-wrap:wrap;gap:4px;flex:1}
+.syl-chip{display:flex;align-items:center;gap:3px;background:#E8EAF6;border:1.5px solid var(--border);border-radius:5px;padding:2px 7px;font-size:0.84rem;cursor:pointer}
+.syl-chip input{cursor:pointer;accent-color:var(--indigo)}
+.syl-chip:has(input:checked){background:var(--indigo);color:white;border-color:var(--indigo)}
+.rev-upd{background:var(--indigo);color:white;border:none;padding:4px 10px;border-radius:5px;font-size:0.72rem;font-weight:700;cursor:pointer}
+.rev-upd:hover{background:#5E35B1}
+
+/* TOAST */
+#toast{position:fixed;bottom:20px;right:18px;padding:10px 16px;border-radius:9px;color:white;font-size:0.82rem;font-weight:600;z-index:9999;opacity:0;transform:translateY(8px);transition:opacity 0.22s,transform 0.22s;pointer-events:none;max-width:280px}
+#toast.show{opacity:1;transform:translateY(0)}
+#toast.success{background:var(--green)}
+#toast.error{background:var(--red)}
+#toast.warn{background:var(--sun)}
+
+@media(max-width:540px){.input-row{flex-direction:column}.btn-csv{margin-left:0}.ref-2{grid-template-columns:1fr}.nak-grid{grid-template-columns:repeat(2,1fr)}.hdr-btns{position:static;transform:none;justify-content:center;margin-top:10px}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>Sigma Katapayadi — GoPada Padhathi</h1>
+  <p>Hindi · Classical Vedic name analysis · Digit-sum method</p>
+  <div class="hdr-btns">
+    <button class="hdr-btn" onclick="openSettings()">Settings</button>
+    <button class="hdr-btn" onclick="openHelp()">Help</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- INPUT -->
+  <div class="card">
+    <div class="card-title">Enter Hindi Names <span>Devanagari</span></div>
+    <div class="input-row">
+      <input type="text" id="nameInput" placeholder="e.g. राम, कृष्ण, ज्योति, 108" onkeydown="if(event.key==='Enter')addNames()"/>
+      <button class="btn-add" onclick="addNames()">Add Names</button>
+    </div>
+    <p class="input-hint">Comma-separate multiple names · Enter key adds &nbsp;<span class="sample-link" onclick="loadSample()">Load sample names</span></p>
+
+    <!-- NAME LOG STRIP -->
+    <div class="log-bar" id="logBar">
+      <span class="log-label">All Names</span>
+      <span class="log-text" id="logText"></span>
+      <button class="log-copy" onclick="copyLog()">Copy</button>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="actions-bar" id="actBar">
+    <button class="btn-s" onclick="openReview()">Review Syllables</button>
+    <button class="btn-d" onclick="clearAll()">Clear All</button>
+    <button class="btn-csv" onclick="exportCSV()">Export CSV</button>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="resSec" style="display:none">
+    <div class="res-hdr">
+      <h2>Results</h2>
+      <span class="res-count" id="resCount">0 names</span>
+      <span class="expand-hint">· Click a row to expand calculation</span>
+    </div>
+    <div class="tbl-outer">
+      <table id="mainTable">
+        <thead id="tHead"></thead>
+        <tbody id="tBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<!-- SYLLABLE REVIEW MODAL -->
+<div class="modal-overlay" id="reviewModal" onclick="if(event.target===this)closeReview()">
+  <div class="modal-box sm">
+    <button class="modal-close" onclick="closeReview()">x</button>
+    <div class="modal-title">Review Syllable Splitting</div>
+    <div class="modal-sub">Uncheck syllables to exclude them from the calculation.</div>
+    <div id="reviewContent"></div>
+    <div class="modal-actions">
+      <button class="btn-s" onclick="closeReview()">Done</button>
+      <button class="btn-add" style="padding:8px 16px;font-size:0.82rem" onclick="updateAllSyllables()">Apply All</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay" id="settingsModal" onclick="if(event.target===this)closeSettings()">
+  <div class="modal-box sm">
+    <button class="modal-close" onclick="closeSettings()">x</button>
+    <div class="modal-title">Settings</div>
+    <div class="modal-sub">Configure which columns appear in the results table.</div>
+
+    <div class="setting-row">
+      <div>
+        <div class="setting-lbl">Sigma Rashi (forward, mod 12)</div>
+        <div class="setting-desc">Always shown — the primary Nama Rashi output</div>
+      </div>
+      <label class="toggle-sw"><input type="checkbox" checked disabled><span class="sl"></span></label>
+    </div>
+    <div class="setting-row">
+      <div>
+        <div class="setting-lbl">Digit String</div>
+        <div class="setting-desc">Show the raw digit string extracted from the name</div>
+      </div>
+      <label class="toggle-sw"><input type="checkbox" id="stgDigits" onchange="refreshTable()"><span class="sl"></span></label>
+    </div>
+    <div class="setting-row">
+      <div>
+        <div class="setting-lbl">Sigma value</div>
+        <div class="setting-desc">Show the digit-sum (Sigma = sum of all digits)</div>
+      </div>
+      <label class="toggle-sw"><input type="checkbox" id="stgSigma" onchange="refreshTable()"><span class="sl"></span></label>
+    </div>
+    <div class="setting-row">
+      <div>
+        <div class="setting-lbl">First Letter Varna Graha</div>
+        <div class="setting-desc">Starting akshara and its planet lord (Agni Purana varga)</div>
+      </div>
+      <label class="toggle-sw"><input type="checkbox" id="stgFL" checked onchange="refreshTable()"><span class="sl"></span></label>
+    </div>
+    <div class="setting-row">
+      <div>
+        <div class="setting-lbl">Planet — 7 Grahas (optional)</div>
+        <div class="setting-desc">Vara lord from 7 classical planets (mod 7)</div>
+      </div>
+      <label class="toggle-sw"><input type="checkbox" id="stgP7" onchange="refreshTable()"><span class="sl"></span></label>
+    </div>
+    <div class="setting-row">
+      <div>
+        <div class="setting-lbl">Planet — 9 Grahas (optional)</div>
+        <div class="setting-desc">Includes Rahu and Ketu (mod 9)</div>
+      </div>
+      <label class="toggle-sw"><input type="checkbox" id="stgP9" onchange="refreshTable()"><span class="sl"></span></label>
+    </div>
+    <div class="setting-row">
+      <div>
+        <div class="setting-lbl">Nakshatra — 27 (optional)</div>
+        <div class="setting-desc">Maps Sigma mod 27 to the 27 Nakshatras</div>
+      </div>
+      <label class="toggle-sw"><input type="checkbox" id="stgNak" onchange="refreshTable()"><span class="sl"></span></label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-add" style="padding:8px 16px;font-size:0.82rem" onclick="closeSettings()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- HELP MODAL -->
+<div class="modal-overlay" id="helpModal" onclick="if(event.target===this)closeHelp()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeHelp()">x</button>
+    <div class="modal-title">Sigma Katapayadi — GoPada Padhathi</div>
+    <div class="modal-sub">Classical Katapayadi (कटपयादि) reference guide</div>
+    <div class="htabs">
+      <button class="htab on" onclick="switchH(this,'hpKata')">Katapayadi Map</button>
+      <button class="htab" onclick="switchH(this,'hpFL')">First Letter</button>
+      <button class="htab" onclick="switchH(this,'hpRules')">Rules</button>
+      <button class="htab" onclick="switchH(this,'hpRashi')">Rashi Table</button>
+      <button class="htab" onclick="switchH(this,'hpPlanets')">Planets</button>
+      <button class="htab" onclick="switchH(this,'hpNak')">27 Nakshatras</button>
+    </div>
+
+    <!-- KATAPAYADI MAP -->
+    <div class="hpanel on" id="hpKata">
+      <div class="hsec">
+        <h3>Consonant to Digit Mapping — Hindi / Devanagari</h3>
+        <p>Only consonants carry values. Vowels, matras, anusvara and visarga are ignored. Read <strong>right to left</strong> (last syllable yields first digit). In a conjunct, only the <strong>last consonant</strong> (before the vowel) counts — preceding dead consonants with halant are skipped. Standalone vowels like <strong>अ</strong> give 0.</p>
+        <table class="reftbl">
+          <thead><tr><th style="width:72px">Group</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>0</th></tr></thead>
+          <tbody>
+            <tr><td class="gl">ka-varga</td><td><div class="sc">क</div><div class="ro">ka</div></td><td><div class="sc">ख</div><div class="ro">kha</div></td><td><div class="sc">ग</div><div class="ro">ga</div></td><td><div class="sc">घ</div><div class="ro">gha</div></td><td><div class="sc">ङ</div><div class="ro">na</div></td><td><div class="sc">च</div><div class="ro">ca</div></td><td><div class="sc">छ</div><div class="ro">cha</div></td><td><div class="sc">ज</div><div class="ro">ja</div></td><td><div class="sc">झ</div><div class="ro">jha</div></td><td><div class="sc">ञ</div><div class="ro">na</div></td></tr>
+            <tr><td class="gl">ta-varga</td><td><div class="sc">ट</div><div class="ro">Ta</div></td><td><div class="sc">ठ</div><div class="ro">Tha</div></td><td><div class="sc">ड</div><div class="ro">Da</div></td><td><div class="sc">ढ</div><div class="ro">Dha</div></td><td><div class="sc">ण</div><div class="ro">Na</div></td><td><div class="sc">त</div><div class="ro">ta</div></td><td><div class="sc">थ</div><div class="ro">tha</div></td><td><div class="sc">द</div><div class="ro">da</div></td><td><div class="sc">ध</div><div class="ro">dha</div></td><td><div class="sc">न</div><div class="ro">na</div></td></tr>
+            <tr><td class="gl">pa-varga</td><td><div class="sc">प</div><div class="ro">pa</div></td><td><div class="sc">फ</div><div class="ro">pha</div></td><td><div class="sc">ब</div><div class="ro">ba</div></td><td><div class="sc">भ</div><div class="ro">bha</div></td><td><div class="sc">म</div><div class="ro">ma</div></td><td class="em">—</td><td class="em">—</td><td class="em">—</td><td class="em">—</td><td class="em">—</td></tr>
+            <tr><td class="gl">ya-group</td><td><div class="sc">य</div><div class="ro">ya</div></td><td><div class="sc">र</div><div class="ro">ra</div></td><td><div class="sc">ल ळ</div><div class="ro">la</div></td><td><div class="sc">व</div><div class="ro">va</div></td><td><div class="sc">श</div><div class="ro">sha</div></td><td><div class="sc">ष</div><div class="ro">Sha</div></td><td><div class="sc">स</div><div class="ro">sa</div></td><td><div class="sc">ह</div><div class="ro">ha</div></td><td class="em">—</td><td class="em">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FIRST LETTER -->
+    <div class="hpanel" id="hpFL">
+      <div class="hsec">
+        <h3>First Letter — Varna Graha Mapping</h3>
+        <p>The first sounding consonant of the name gives the <strong>Varna Graha</strong> — the planet of the opening syllable. It follows the Agni Purana varga grouping (seven consonant families, each ruled by one Graha). Vowels and matras at the start are skipped; the first real consonant is used.</p>
+        <table class="ref-mini">
+          <tr><th>Varga (group)</th><th>Consonants</th><th>Graha</th></tr>
+          <tr><td>ka-varga</td><td class="sc">क ख ग घ ङ</td><td>Mars — Mangal</td></tr>
+          <tr><td>cha-varga</td><td class="sc">च छ ज झ ञ</td><td>Venus — Shukra</td></tr>
+          <tr><td>Ta-varga</td><td class="sc">ट ठ ड ढ ण</td><td>Mercury — Budha</td></tr>
+          <tr><td>ta-varga</td><td class="sc">त थ द ध न</td><td>Jupiter — Guru</td></tr>
+          <tr><td>pa-varga</td><td class="sc">प फ ब भ म</td><td>Saturn — Shani</td></tr>
+          <tr><td>ya-group</td><td class="sc">य र ल ळ व</td><td>Moon — Chandra</td></tr>
+          <tr><td>sha-group</td><td class="sc">श ष स ह</td><td>Sun — Surya</td></tr>
+        </table>
+        <p style="margin-top:8px;font-size:0.75rem;color:var(--muted)">Example: in <strong>राम</strong> the first consonant is <strong>र</strong> (ya-group), so the first-letter Varna Graha is the Moon.</p>
+      </div>
+    </div>
+
+
+      <div class="hsec">
+        <h3>The Sigma Katapayadi Method — 4 Rules</h3>
+        <p><strong>1. Right to Left:</strong> Segment the Hindi name into syllable clusters. Process from the rightmost cluster first. The last syllable gives the first digit in the string.</p>
+        <p><strong>2. Conjuncts — last consonant only:</strong> In a conjunct like त्र, the first consonant त has a halant (्) and is dead — skip it. Only the final consonant र (which carries the vowel) contributes its digit value.</p>
+        <p><strong>3. Standalone vowels = 0:</strong> If a cluster is a vowel not preceded by any consonant (like अ, इ, उ at word start), it gives digit 0. Example: अत्रि → अ = 0, रि = 2 → Sigma = 2 → Taurus.</p>
+        <p><strong>4. Vowel matras ignored:</strong> The matra (ा ि ी ु ू े ो etc.) following a consonant carries no digit. The consonant alone determines the value.</p>
+        <p><strong>Sigma:</strong> Sum all extracted digit values. Sigma is just the total — not the concatenated number. Then: Sigma mod 12 = Rashi index. Sigma mod 7 = Planet (7). Sigma mod 9 = Planet (9). Sigma mod 27 = Nakshatra.</p>
+        <p style="margin-top:8px;padding:8px 10px;background:#E8F5E9;border-radius:6px;font-size:0.77rem"><strong>Why forward only?</strong> The reverse of any digit string gives the same digit-sum (since addition is commutative: 2+5 = 5+2 = 7). The reverse is therefore always identical to the forward result and needs no separate calculation.</p>
+      </div>
+    </div>
+
+    <!-- RASHI TABLE -->
+    <div class="hpanel" id="hpRashi">
+      <div class="hsec">
+        <h3>Rashi Table — Sigma mod 12</h3>
+        <p>Remainder 0 = Pisces (Meena). Remainder 1 = Aries (Mesha), and so on.</p>
+        <div class="ref-2">
+          <table class="ref-mini">
+            <tr><th>Mod</th><th>Rashi (English)</th><th>Rashi (Sanskrit)</th></tr>
+            <tr><td><span class="nb">0</span></td><td>Pisces</td><td>Meena</td></tr>
+            <tr><td><span class="nb">1</span></td><td>Aries</td><td>Mesha</td></tr>
+            <tr><td><span class="nb">2</span></td><td>Taurus</td><td>Vrishabha</td></tr>
+            <tr><td><span class="nb">3</span></td><td>Gemini</td><td>Mithuna</td></tr>
+            <tr><td><span class="nb">4</span></td><td>Cancer</td><td>Karka</td></tr>
+            <tr><td><span class="nb">5</span></td><td>Leo</td><td>Simha</td></tr>
+            <tr><td><span class="nb">6</span></td><td>Virgo</td><td>Kanya</td></tr>
+            <tr><td><span class="nb">7</span></td><td>Libra</td><td>Tula</td></tr>
+            <tr><td><span class="nb">8</span></td><td>Scorpio</td><td>Vrishchika</td></tr>
+            <tr><td><span class="nb">9</span></td><td>Sagittarius</td><td>Dhanu</td></tr>
+            <tr><td><span class="nb">10</span></td><td>Capricorn</td><td>Makara</td></tr>
+            <tr><td><span class="nb">11</span></td><td>Aquarius</td><td>Kumbha</td></tr>
+          </table>
+          <div>
+            <p style="font-size:0.77rem;color:#555;line-height:1.6;margin-bottom:10px">The <strong>Sigma Katapayadi (GoPada Padhathi)</strong> sums all consonant digit values of the name and divides by 12. The remainder identifies the Nama Rashi — the Name Sign. Test it against the natal chart using the 5 connection patterns:<br><br>
+            1. Name Rashi IS the Lagna sign<br>
+            2. Name Rashi is in trine (1/5/9) from Lagna<br>
+            3. Name Rashi lord aspects/conjoins Lagnesha<br>
+            4. Name Rashi dispositor connects to Lagna<br>
+            5. Name Rashi lord is the Yogakaraka / strongest planet</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLANETS -->
+    <div class="hpanel" id="hpPlanets">
+      <div class="hsec">
+        <h3>Planet Tables</h3>
+        <div class="ref-2">
+          <table class="ref-mini">
+            <tr><th colspan="2">Planet (7) — Sigma mod 7</th></tr>
+            <tr><th>Mod</th><th>Graha / Vara</th></tr>
+            <tr><td><span class="nb">0</span></td><td>Mars — Mangal</td></tr>
+            <tr><td><span class="nb">1</span></td><td>Sun — Surya</td></tr>
+            <tr><td><span class="nb">2</span></td><td>Venus — Shukra</td></tr>
+            <tr><td><span class="nb">3</span></td><td>Mercury — Budha</td></tr>
+            <tr><td><span class="nb">4</span></td><td>Moon — Chandra</td></tr>
+            <tr><td><span class="nb">5</span></td><td>Saturn — Shani</td></tr>
+            <tr><td><span class="nb">6</span></td><td>Jupiter — Guru</td></tr>
+          </table>
+          <table class="ref-mini">
+            <tr><th colspan="2">Planet (9) — Sigma mod 9</th></tr>
+            <tr><th>Mod</th><th>Graha</th></tr>
+            <tr><td><span class="nb">0</span></td><td>Ketu</td></tr>
+            <tr><td><span class="nb">1</span></td><td>Sun — Surya</td></tr>
+            <tr><td><span class="nb">2</span></td><td>Moon — Chandra</td></tr>
+            <tr><td><span class="nb">3</span></td><td>Mars — Mangal</td></tr>
+            <tr><td><span class="nb">4</span></td><td>Mercury — Budha</td></tr>
+            <tr><td><span class="nb">5</span></td><td>Jupiter — Guru</td></tr>
+            <tr><td><span class="nb">6</span></td><td>Venus — Shukra</td></tr>
+            <tr><td><span class="nb">7</span></td><td>Saturn — Shani</td></tr>
+            <tr><td><span class="nb">8</span></td><td>Rahu</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- NAKSHATRAS -->
+    <div class="hpanel" id="hpNak">
+      <div class="hsec">
+        <h3>27 Nakshatras — Sigma mod 27</h3>
+        <p style="font-size:0.75rem;color:var(--muted);margin-bottom:10px">Remainder maps to the Nakshatra lord and pada. Mod 0 = Ashvini, Mod 1 = Bharani, and so on.</p>
+        <div class="nak-grid" id="nakRefGrid"></div>
+      </div>
+    </div>
+
+  </div><!-- /modal-box -->
+</div>
+
+<div id="toast"></div>
+
+<script>
+// -- DATA ------------------------------------------------------------------
+const LAGNAS   = ['Pisces','Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius'];
+const LAGNAS_S = ['Meena','Mesha','Vrishabha','Mithuna','Karka','Simha','Kanya','Tula','Vrishchika','Dhanu','Makara','Kumbha'];
+const PLANETS9 = ['Ketu','Sun','Moon','Mars','Mercury','Jupiter','Venus','Saturn','Rahu'];
+const PLANETS7 = ['Mars','Sun','Venus','Mercury','Moon','Saturn','Jupiter'];
+const NAKSHATRAS = [
+  {n:'Ashvini',lord:'Ketu',s:'अश्विनी'},{n:'Bharani',lord:'Venus',s:'भरणी'},{n:'Krittika',lord:'Sun',s:'कृत्तिका'},
+  {n:'Rohini',lord:'Moon',s:'रोहिणी'},{n:'Mrigashira',lord:'Mars',s:'मृगशिरा'},{n:'Ardra',lord:'Rahu',s:'आर्द्रा'},
+  {n:'Punarvasu',lord:'Jupiter',s:'पुनर्वसु'},{n:'Pushya',lord:'Saturn',s:'पुष्य'},{n:'Ashlesha',lord:'Mercury',s:'अश्लेषा'},
+  {n:'Magha',lord:'Ketu',s:'मघा'},{n:'Purva Phalguni',lord:'Venus',s:'पूर्वफाल्गुनी'},{n:'Uttara Phalguni',lord:'Sun',s:'उत्तरफाल्गुनी'},
+  {n:'Hasta',lord:'Moon',s:'हस्त'},{n:'Chitra',lord:'Mars',s:'चित्रा'},{n:'Swati',lord:'Rahu',s:'स्वाती'},
+  {n:'Vishakha',lord:'Jupiter',s:'विशाखा'},{n:'Anuradha',lord:'Saturn',s:'अनुराधा'},{n:'Jyeshtha',lord:'Mercury',s:'ज्येष्ठा'},
+  {n:'Mula',lord:'Ketu',s:'मूल'},{n:'Purva Ashadha',lord:'Venus',s:'पूर्वाषाढा'},{n:'Uttara Ashadha',lord:'Sun',s:'उत्तराषाढा'},
+  {n:'Shravana',lord:'Moon',s:'श्रवण'},{n:'Dhanishtha',lord:'Mars',s:'धनिष्ठा'},{n:'Shatabhisha',lord:'Rahu',s:'शतभिषा'},
+  {n:'Purva Bhadrapada',lord:'Jupiter',s:'पूर्वभाद्रपद'},{n:'Uttara Bhadrapada',lord:'Saturn',s:'उत्तरभाद्रपद'},{n:'Revati',lord:'Mercury',s:'रेवती'}
+];
+
+// Hindi Katapayadi mapping
+const hindiMap = {
+  'क':1,'ख':2,'ग':3,'घ':4,'ङ':5,'च':6,'छ':7,'ज':8,'झ':9,'ञ':0,
+  'ट':1,'ठ':2,'ड':3,'ढ':4,'ण':5,'त':6,'थ':7,'द':8,'ध':9,'न':0,
+  'प':1,'फ':2,'ब':3,'भ':4,'म':5,
+  'य':1,'र':2,'ल':3,'ळ':3,'व':4,'श':5,'ष':6,'स':7,'ह':8
+};
+// Agni Purana: each consonant varga ruled by a Graha
+const vargaGraha = {
+  'क':'Mars','ख':'Mars','ग':'Mars','घ':'Mars','ङ':'Mars',
+  'च':'Venus','छ':'Venus','ज':'Venus','झ':'Venus','ञ':'Venus',
+  'ट':'Mercury','ठ':'Mercury','ड':'Mercury','ढ':'Mercury','ण':'Mercury',
+  'त':'Jupiter','थ':'Jupiter','द':'Jupiter','ध':'Jupiter','न':'Jupiter',
+  'प':'Saturn','फ':'Saturn','ब':'Saturn','भ':'Saturn','म':'Saturn',
+  'य':'Moon','र':'Moon','ल':'Moon','ळ':'Moon','व':'Moon',
+  'श':'Sun','ष':'Sun','स':'Sun','ह':'Sun'
+};
+function firstLetterGraha(word) {
+  const segs = graphemes(word.trim());
+  for (let i = 0; i < segs.length; i++) {
+    const chars = [...segs[i]];
+    for (let j = 0; j < chars.length; j++) {
+      const ch = chars[j];
+      if (vargaGraha[ch]) return { letter: segs[i], consonant: ch, graha: vargaGraha[ch] };
+    }
+  }
+  return null;
+}
+const VIRAMAS = new Set(['\u094D']);
+
+// Devanagari vowel chars (standalone vowels -> digit 0)
+const isDevaVowel = ch => /[\u0900-\u0902\u0904-\u0914\u093A-\u094C\u094E-\u0954\u0960-\u0963\u0972-\u097A]/.test(ch);
+
+// -- HELPERS ---------------------------------------------------------------
+function graphemes(word) {
+  if (typeof Intl.Segmenter === 'undefined') return [...word];
+  const seg = new Intl.Segmenter('hi', {granularity:'grapheme'});
+  return [...seg.segment(word)].map(x=>x.segment);
+}
+function digitSum(s) { return String(s).replace(/[^0-9]/g,'').split('').reduce((a,d)=>a+parseInt(d),0); }
+function sigmaOf(numStr) {
+  if (!numStr) return 0;
+  return String(numStr).split('').reduce((a,d)=>a+(parseInt(d)||0),0);
+}
+function rashiOf(sig)  { return LAGNAS[sig % 12]; }
+function rashiSOf(sig) { return LAGNAS_S[sig % 12]; }
+function p9Of(sig)     { return PLANETS9[sig % 9]; }
+function p7Of(sig)     { return PLANETS7[sig % 7]; }
+function nakOf(sig)    { return NAKSHATRAS[sig % 27]; }
+
+// -- TRACE -----------------------------------------------------------------
+function traceHindi(word) {
+  const segs = graphemes(word);
+  const trace = [];
+  for (let i = segs.length - 1; i >= 0; i--) {
+    const syl = segs[i];
+    const chars = [...syl];
+    const candidates = [];
+    for (let j = 0; j < chars.length; j++) {
+      const ch = chars[j];
+      if (hindiMap[ch] !== undefined) {
+        const dead = VIRAMAS.has(chars[j+1]||'');
+        candidates.push({ch, dead, digit: hindiMap[ch]});
+      }
+    }
+    const active = candidates.filter(c=>!c.dead).pop() || candidates[candidates.length-1] || null;
+    const skipped = candidates.filter(c=>c!==active).map(c=>c.ch);
+    if (active) {
+      trace.push({syl, consonant:active.ch, skipped, digit:active.digit});
+    } else {
+      const hasVowel = chars.some(ch=>isDevaVowel(ch));
+      if (candidates.length===0 && hasVowel) {
+        trace.push({syl, consonant:'(v)', skipped:[], digit:0, type:'vowel-zero'});
+      } else {
+        trace.push({syl, consonant:null, skipped, digit:null});
+      }
+    }
+  }
+  return trace;
+}
+
+function getDigits(trace) { return trace.filter(t=>t.digit!==null).map(t=>t.digit).join(''); }
+
+function processWord(word) {
+  const trimmed = word.trim();
+  const isNum = /^\d+$/.test(trimmed);
+  let traceRTL, numStr, sigma, syllables;
+
+  if (isNum) {
+    numStr = trimmed;
+    sigma = sigmaOf(numStr);
+    syllables = trimmed.split('');
+    traceRTL = [...syllables].reverse().map(d => ({
+      syl: d, consonant: d, skipped: [], digit: parseInt(d)
+    }));
+  } else {
+    traceRTL = traceHindi(trimmed);
+    numStr   = getDigits(traceRTL);
+    sigma    = sigmaOf(numStr);
+    syllables = graphemes(trimmed);
+  }
+
+  const fl = isNum ? null : firstLetterGraha(trimmed);
+
+  return {
+    word: trimmed, trace: traceRTL, numStr, sigma,
+    syllables: syllables,
+    selectedSyllables: [...syllables],
+    firstLetter: fl
+  };
+}
+
+function recompute(e) {
+  const joined = e.selectedSyllables.join('');
+  if (/^\d+$/.test(e.word.trim())) {
+    e.numStr = joined;
+    e.sigma = sigmaOf(e.numStr);
+    e.trace = joined.split('').reverse().map(d => ({
+      syl: d, consonant: d, skipped: [], digit: parseInt(d)
+    }));
+  } else {
+    e.trace  = traceHindi(joined);
+    e.numStr = getDigits(e.trace);
+    e.sigma  = sigmaOf(e.numStr);
+    e.firstLetter = firstLetterGraha(e.word);
+  }
+}
+
+// -- STATE -----------------------------------------------------------------
+let results = [];
+const SAMPLES = 'राम, कृष्ण, शिव, ज्योति, अत्रि, सरस्वती';
+
+function loadSample() { document.getElementById('nameInput').value = SAMPLES; toast('Sample loaded'); }
+
+function addNames() {
+  const raw = document.getElementById('nameInput').value.trim();
+  if (!raw) { toast('Please enter a name','warn'); return; }
+  const words = raw.split(',').map(w=>w.trim()).filter(Boolean);
+  words.forEach(w => results.push(processWord(w)));
+  document.getElementById('nameInput').value = '';
+  refreshTable();
+  updateLog();
+  toast(`${words.length} item${words.length!==1?'s':''} added`);
+}
+
+function deleteRow(idx, ev) {
+  ev.stopPropagation();
+  results.splice(idx,1);
+  refreshTable();
+  updateLog();
+}
+
+function clearAll() {
+  results = [];
+  refreshTable();
+  updateLog();
+  toast('Cleared','warn');
+}
+
+// -- NAME LOG --------------------------------------------------------------
+function updateLog() {
+  const bar  = document.getElementById('logBar');
+  const text = document.getElementById('logText');
+  if (!results.length) { bar.classList.remove('show'); return; }
+  bar.classList.add('show');
+  text.textContent = results.map(r=>r.word).join(', ');
+}
+
+function copyLog() {
+  const t = document.getElementById('logText').textContent;
+  navigator.clipboard.writeText(t).then(()=>toast('Names copied to clipboard')).catch(()=>{
+    const ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('Copied');
+  });
+}
+
+// -- DETAIL HTML -----------------------------------------------------------
+function buildDetail(r, colSpan, idx) {
+  const selectedSet = new Set(r.selectedSyllables);
+  const blocks = (r.trace||[]).map(t => {
+    const excl   = !selectedSet.has(t.syl);
+    const isVZ   = t.type==='vowel-zero';
+    const hasHit = t.consonant !== null;
+    let midCls, midTxt, botCls, botTxt;
+    if (isVZ) {
+      midCls='syl-mid hit'; midTxt='vowel=0';
+      botCls=excl?'syl-bot excl':'syl-bot'; botTxt=excl?'x':'0';
+    } else if (hasHit) {
+      midCls='syl-mid hit';
+      const sk=(t.skipped&&t.skipped.length)?`<span style="text-decoration:line-through;opacity:0.4;font-size:0.7rem;margin-right:2px">${t.skipped.join('्')+'्'}</span>`:'';
+      midTxt=`${sk}${t.consonant}`;
+      botCls=excl?'syl-bot excl':'syl-bot'; botTxt=excl?'x':t.digit;
+    } else {
+      midCls='syl-mid miss'; midTxt='(vowel)';
+      botCls=excl?'syl-bot excl':'syl-bot miss'; botTxt=excl?'x':'--';
+    }
+    return `<div class="syl-block${excl?' excl':''}${!hasHit&&!isVZ?' no-c':''}">
+      <div class="syl-top">${t.syl}</div>
+      <div class="${midCls}">${midTxt}</div>
+      <div class="${botCls}">${botTxt}</div>
+    </div>`;
+  }).join('<span class="syl-arrow">&#8594;</span>');
+
+  const activeDigits = (r.trace||[]).filter(t=>t.digit!==null&&selectedSet.has(t.syl));
+  const asmD = activeDigits.map(t=>`<span class="asm-d">${t.digit}</span>`).join('<span class="asm-sep">+</span>');
+  const sig  = r.sigma;
+
+  return `<td colspan="${colSpan}" style="padding:0;background:#F0F7FF">
+    <div class="detail-inner">
+      <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:8px;flex-wrap:wrap">
+        <span style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.7px;color:var(--muted)">Breakdown</span>
+        <span style="font-size:1.05rem;font-weight:700;color:var(--text)">${r.word}</span>
+        <span style="font-size:0.65rem;color:var(--muted)">right to left &middot; last consonant per conjunct</span>
+      </div>
+      <div class="syl-track">${blocks}</div>
+      <div class="asm">
+        <span class="asm-lbl">Digits:</span>
+        ${asmD||'<span style="color:#ccc;font-size:0.72rem">none found</span>'}
+        <span class="asm-sep">=</span>
+        <span class="asm-res">${r.numStr||'--'}</span>
+        <span class="asm-sep" style="margin-left:6px">Sigma =</span>
+        <span class="asm-sig">${sig}</span>
+        <span class="asm-sep" style="margin-left:6px">&divide;12 rem</span>
+        <span class="asm-res" style="background:#3949AB">${sig%12} = ${rashiOf(sig)} (${rashiSOf(sig)})</span>
+        <span class="asm-sep">&divide;7 rem</span>
+        <span class="asm-res" style="background:#E65100">${sig%7} = ${p7Of(sig)}</span>
+        <span class="asm-sep">&divide;9 rem</span>
+        <span class="asm-res" style="background:#B71C1C">${sig%9} = ${p9Of(sig)}</span>
+        <span class="asm-sep">&divide;27 rem</span>
+        <span class="asm-res" style="background:#00695C">${sig%27} = ${nakOf(sig).n}</span>
+        ${r.firstLetter ? `<span class="asm-sep" style="margin-left:8px;border-left:1px solid #ddd;padding-left:8px">1st akshara</span><span class="asm-res" style="background:#7B1FA2;font-size:1rem;padding:2px 10px">${r.firstLetter.letter}</span><span class="asm-sep">Varna Graha</span><span class="asm-res" style="background:#4A148C">${r.firstLetter.graha}</span>` : ''}
+      </div>
+      <div style="margin-top:11px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <button onclick="copyExplanation(${idx},event)" style="background:linear-gradient(135deg,#00796B,#004D40);color:white;border:none;padding:7px 16px;border-radius:8px;font-size:0.79rem;font-weight:700;cursor:pointer">Copy for book</button>
+        <span style="font-size:0.68rem;color:var(--muted)">Plain-English mapping &amp; math for the outputs you have enabled</span>
+      </div>
+    </div>
+  </td>`;
+}
+
+// -- TABLE -----------------------------------------------------------------
+function cfg(id) { return document.getElementById(id).checked; }
+function countCols() {
+  let n = 4; // #, Name, Rashi, del
+  if (cfg('stgDigits')) n++;
+  if (cfg('stgSigma'))  n++;
+  if (cfg('stgFL'))     n++;
+  if (cfg('stgP7'))     n++;
+  if (cfg('stgP9'))     n++;
+  if (cfg('stgNak'))    n++;
+  return n;
+}
+
+function refreshTable() {
+  const sec   = document.getElementById('resSec');
+  const bar   = document.getElementById('actBar');
+  const thead = document.getElementById('tHead');
+  const tbody = document.getElementById('tBody');
+  const cnt   = document.getElementById('resCount');
+  if (!results.length) { sec.style.display='none'; bar.classList.remove('on'); return; }
+  sec.style.display='block'; bar.classList.add('on');
+  cnt.textContent = `${results.length} item${results.length!==1?'s':''}`;
+
+  const showDigits = cfg('stgDigits');
+  const showSigma  = cfg('stgSigma');
+  const showFL     = cfg('stgFL');
+  const showP7     = cfg('stgP7');
+  const showP9     = cfg('stgP9');
+  const showNak    = cfg('stgNak');
+  const nCols      = countCols();
+
+  let h = `<tr><th>#</th><th style="text-align:left">Name</th>`;
+  if (showDigits) h += `<th>Digits</th>`;
+  if (showSigma)  h += `<th>Sigma</th>`;
+  if (showFL)     h += `<th>1st Letter<br><span style="font-weight:400;opacity:0.7;font-size:0.62rem">Varna Graha</span></th>`;
+  h += `<th>Nama Rashi<br><span style="font-weight:400;opacity:0.7;font-size:0.62rem">Sigma mod 12</span></th>`;
+  if (showP7) h += `<th>Planet (7)<br><span style="font-weight:400;opacity:0.7;font-size:0.62rem">Sigma mod 7</span></th>`;
+  if (showP9) h += `<th>Planet (9)<br><span style="font-weight:400;opacity:0.7;font-size:0.62rem">Sigma mod 9</span></th>`;
+  if (showNak) h += `<th>Nakshatra<br><span style="font-weight:400;opacity:0.7;font-size:0.62rem">Sigma mod 27</span></th>`;
+  h += `<th></th></tr>`;
+  thead.innerHTML = h;
+
+  tbody.innerHTML = results.map((r,i) => {
+    const sig = r.sigma;
+    const nak = nakOf(sig);
+    const fl  = r.firstLetter;
+    let row = `
+      <td style="text-align:center">
+        <span style="color:var(--muted);font-size:0.72rem">${i+1}</span>
+        <span class="expand-caret">&#9662;</span>
+      </td>
+      <td><span class="td-name">${r.word}</span></td>`;
+    if (showDigits) row += `<td class="td-num">${r.numStr||'--'}</td>`;
+    if (showSigma)  row += `<td><span class="badge b-sigma">&Sigma;=${sig}</span></td>`;
+    if (showFL) row += fl
+      ? `<td><span class="badge b-fl">${fl.letter}</span><br><span class="badge b-vg" style="margin-top:2px">${fl.graha}</span></td>`
+      : `<td><span style="color:#ccc;font-size:0.75rem">--</span></td>`;
+    row += `<td><span class="badge b-rashi">${rashiOf(sig)}</span><br><span style="font-size:0.64rem;color:var(--muted)">${rashiSOf(sig)}</span></td>`;
+    if (showP7) row += `<td><span class="badge b-p7">${p7Of(sig)}</span></td>`;
+    if (showP9) row += `<td><span class="badge b-p9">${p9Of(sig)}</span></td>`;
+    if (showNak) row += `<td><span class="badge b-nak">${nak.n}</span><br><span style="font-size:0.62rem;color:var(--muted)">${nak.lord}</span></td>`;
+    row += `<td><button class="del-btn" onclick="deleteRow(${i},event)" title="Remove">x</button></td>`;
+    const det = buildDetail(r, nCols, i);
+    return `<tr class="data-row" onclick="toggleDetail(this)">${row}</tr>
+            <tr class="detail-row" data-idx="${i}"><td style="padding:0;border-right:none"></td><td style="padding:0;border-left:none"></td>${det}</tr>`;
+  }).join('');
+}
+
+function toggleDetail(row) {
+  const dr = row.nextElementSibling;
+  const wasOpen = dr.classList.contains('open');
+  document.querySelectorAll('tr.detail-row.open').forEach(r=>{r.classList.remove('open');r.previousElementSibling.classList.remove('expanded')});
+  if (!wasOpen) { dr.classList.add('open'); row.classList.add('expanded'); dr.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+}
+
+// -- EXPORT ----------------------------------------------------------------
+function exportCSV() {
+  if (!results.length) { toast('No data to export','warn'); return; }
+  const showDigits=cfg('stgDigits'),showSigma=cfg('stgSigma'),showFL=cfg('stgFL'),
+        showP7=cfg('stgP7'),showP9=cfg('stgP9'),showNak=cfg('stgNak');
+  const esc = v => { v = String(v==null?'':v); return /[",\n]/.test(v)?`"${v.replace(/"/g,'""')}"`:v; };
+  const hdrs = ['#','Name'];
+  if (showDigits) hdrs.push('Digit String');
+  if (showSigma)  hdrs.push('Sigma');
+  if (showFL)     hdrs.push('First Letter','Varna Graha');
+  hdrs.push('Nama Rashi (EN)','Nama Rashi (SA)');
+  if (showP7)     hdrs.push('Planet 7');
+  if (showP9)     hdrs.push('Planet 9');
+  if (showNak)    hdrs.push('Nakshatra','Nak Lord');
+  const rows = results.map((r,i)=>{
+    const s=r.sigma; const nak=nakOf(s); const c=[i+1,r.word];
+    if (showDigits) c.push(r.numStr||'');
+    if (showSigma)  c.push(s);
+    if (showFL)     c.push(r.firstLetter?r.firstLetter.letter:'', r.firstLetter?r.firstLetter.graha:'');
+    c.push(rashiOf(s),rashiSOf(s));
+    if (showP7)     c.push(p7Of(s));
+    if (showP9)     c.push(p9Of(s));
+    if (showNak)    c.push(nak.n,nak.lord);
+    return c.map(esc).join(',');
+  });
+  const csv = '\uFEFF'+[hdrs.map(esc).join(','),...rows].join('\n');
+  const blob= new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  Object.assign(document.createElement('a'),{href:url,download:`sigma_katapayadi_${new Date().toISOString().slice(0,10)}.csv`}).click();
+  URL.revokeObjectURL(url);
+  toast(`Exported ${results.length} rows`);
+}
+
+// -- COPY EXPLANATION (book-ready, plain English) --------------------------
+function copyExplanation(idx, ev) {
+  if (ev) ev.stopPropagation();
+  const r = results[idx];
+  if (!r) return;
+  const sig = r.sigma;
+  const showFL=cfg('stgFL'), showP7=cfg('stgP7'), showP9=cfg('stgP9'), showNak=cfg('stgNak');
+  const sel = new Set(r.selectedSyllables);
+  const isNum = /^\d+$/.test(r.word.trim());
+  const contrib = (r.trace||[]).filter(t=>t.digit!==null && sel.has(t.syl)); // already right-to-left
+  const L = [];
+
+  L.push(`Word: ${r.word}`);
+  L.push('');
+
+  if (isNum) {
+    L.push('This is a number, so each digit is taken as it is (read right to left):');
+    L.push('  ' + contrib.map(t=>`${t.syl} = ${t.digit}`).join('   '));
+  } else {
+    L.push('Step 1 - Break the word into syllables and read them from right to left.');
+    L.push('For each syllable only the last consonant counts. Vowels and vowel-signs (matras) are ignored.');
+    contrib.forEach(t=>{
+      if (t.type==='vowel-zero') {
+        L.push(`  ${t.syl}  ->  a standalone vowel, so its value is 0`);
+      } else {
+        const sk = (t.skipped&&t.skipped.length) ? ` (silent letter${t.skipped.length>1?'s':''} ${t.skipped.join(', ')} skipped)` : '';
+        L.push(`  ${t.syl}  ->  consonant ${t.consonant}${sk} = ${t.digit}`);
+      }
+    });
+  }
+
+  const digits = contrib.map(t=>t.digit);
+  L.push('');
+  L.push('Step 2 - Add all the digit values together:');
+  L.push(`  ${digits.join(' + ') || '0'} = ${sig}`);
+  L.push(`  This total is called Sigma (written as the symbol S). Here Sigma = ${sig}.`);
+
+  L.push('');
+  L.push('Step 3 - Find the Name Rashi (the sign of the name):');
+  L.push('  Divide Sigma by 12 and keep the remainder.');
+  L.push(`  ${sig} divided by 12 leaves a remainder of ${sig%12}.`);
+  L.push(`  Remainder ${sig%12} means the Name Rashi is ${rashiOf(sig)} (${rashiSOf(sig)}).`);
+
+  if (showFL && r.firstLetter) {
+    L.push('');
+    L.push('First Letter (Varna Graha):');
+    L.push(`  The first sounding letter of the name is ${r.firstLetter.letter} (consonant ${r.firstLetter.consonant}).`);
+    L.push(`  Following the Agni Purana grouping, this letter is ruled by ${r.firstLetter.graha}.`);
+  }
+  if (showP7) {
+    L.push('');
+    L.push('Planet from the 7 Grahas:');
+    L.push(`  Divide Sigma by 7. ${sig} divided by 7 leaves remainder ${sig%7}, which gives ${p7Of(sig)}.`);
+  }
+  if (showP9) {
+    L.push('');
+    L.push('Planet from the 9 Grahas:');
+    L.push(`  Divide Sigma by 9. ${sig} divided by 9 leaves remainder ${sig%9}, which gives ${p9Of(sig)}.`);
+  }
+  if (showNak) {
+    const nk = nakOf(sig);
+    L.push('');
+    L.push('Nakshatra:');
+    L.push(`  Divide Sigma by 27. ${sig} divided by 27 leaves remainder ${sig%27}, which gives ${nk.n} (ruled by ${nk.lord}).`);
+  }
+
+  const text = L.join('\n');
+  navigator.clipboard.writeText(text).then(()=>toast('Explanation copied for your book')).catch(()=>{
+    const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('Copied');
+  });
+}
+
+// -- SYLLABLE REVIEW -------------------------------------------------------
+function openReview() {
+  if (!results.length) { toast('No results to review','warn'); return; }
+  const c = document.getElementById('reviewContent');
+  c.innerHTML = results.map((r,idx)=>{
+    const chips = r.syllables.map(syl=>{
+      const chk = r.selectedSyllables.includes(syl)?'checked':'';
+      return `<label class="syl-chip"><input type="checkbox" ${chk} value="${syl}">${syl}</label>`;
+    }).join('');
+    return `<div class="rev-row" data-idx="${idx}"><div class="rev-word">${r.word}</div><div class="syl-chips">${chips}</div><button class="rev-upd" onclick="updateOne(this)">Update</button></div>`;
+  }).join('');
+  document.getElementById('reviewModal').classList.add('open');
+}
+function updateOne(btn) {
+  const row = btn.closest('.rev-row'); const idx = parseInt(row.dataset.idx);
+  results[idx].selectedSyllables = [...row.querySelectorAll('input:checked')].map(b=>b.value);
+  recompute(results[idx]); refreshTable();
+  btn.textContent='Done'; btn.style.background='var(--green)';
+  setTimeout(()=>{btn.textContent='Update';btn.style.background='';},1500);
+}
+function updateAllSyllables() {
+  document.querySelectorAll('#reviewContent .rev-row').forEach(row=>{
+    const idx=parseInt(row.dataset.idx);
+    results[idx].selectedSyllables=[...row.querySelectorAll('input:checked')].map(b=>b.value);
+    recompute(results[idx]);
+  });
+  refreshTable(); updateLog(); toast('Syllable updates applied'); closeReview();
+}
+function closeReview() { document.getElementById('reviewModal').classList.remove('open'); }
+
+// -- SETTINGS --------------------------------------------------------------
+function openSettings()  { document.getElementById('settingsModal').classList.add('open'); }
+function closeSettings() { document.getElementById('settingsModal').classList.remove('open'); }
+
+// -- HELP ------------------------------------------------------------------
+function openHelp()  { buildNakRef(); document.getElementById('helpModal').classList.add('open'); }
+function closeHelp() { document.getElementById('helpModal').classList.remove('open'); }
+function switchH(btn, pid) {
+  document.querySelectorAll('.htab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.hpanel').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on'); document.getElementById(pid).classList.add('on');
+}
+function buildNakRef() {
+  const g = document.getElementById('nakRefGrid');
+  if (g.innerHTML) return;
+  g.innerHTML = NAKSHATRAS.map((n,i)=>`
+    <div class="nak-cell">
+      <div class="nn">${i} -- ${n.n}</div>
+      <div style="font-size:0.8rem">${n.s}</div>
+      <div class="nm">Lord: ${n.lord}</div>
+    </div>`).join('');
+}
+
+// -- TOAST -----------------------------------------------------------------
+let _tt;
+function toast(msg,type='success') {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className=`show ${type}`;
+  clearTimeout(_tt); _tt=setTimeout(()=>el.classList.remove('show'),2800);
+}
+</script>
+</body>
+</html>
