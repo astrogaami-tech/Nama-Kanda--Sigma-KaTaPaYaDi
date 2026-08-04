@@ -2,9 +2,6 @@
 
 A single-file, offline browser tool that maps names to zodiac coordinates using a **summation reformulation** of the classical Katapayadi system. Part of the **Nama Kanda** research framework by Astrogaami.
 
-**Live tool:** `https://<your-username>.github.io/sigma-katapayadi/`
-*(replace `<your-username>` after you enable GitHub Pages, see below)*
-
 ---
 
 ## What it is
